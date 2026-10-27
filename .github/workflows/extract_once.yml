@@ -1,13 +1,7 @@
-YAML
 name: Extract Flood Trace by Sido (1-Time)
 
-on:
+"on":
   workflow_dispatch:
-    inputs:
-      target_ctpv_cd:
-        description: '추출할 시도코드 (비워두면 전체 시도별 생성, 예: 11 또는 11,41)'
-        required: false
-        default: ''
 
 permissions:
   contents: write
@@ -19,16 +13,17 @@ jobs:
       - name: 저장소 코드 체크아웃
         uses: actions/checkout@v4
 
-      - name: Python 3.11 및 필수 패키지 설치
+      - name: Python 3.11 설정
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      - run: pip install requests urllib3 shapely
+          python-version: "3.11"
+
+      - name: 필수 패키지 설치
+        run: pip install requests urllib3 shapely
 
       - name: 침수흔적도 시도별 GeoJSON 추출 실행
         env:
           SAFETYDATA_API_KEY: ${{ secrets.SAFETYDATA_API_KEY }}
-          TARGET_CTPV_CD: ${{ github.event.inputs.target_ctpv_cd }}
         run: python fetch_flood_trace_to_geojson.py
 
       - name: 추출된 시도별 GeoJSON 파일 저장소에 커밋
